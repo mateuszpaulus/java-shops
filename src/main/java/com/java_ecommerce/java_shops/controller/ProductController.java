@@ -3,7 +3,6 @@ package com.java_ecommerce.java_shops.controller;
 import com.java_ecommerce.java_shops.dto.ProductDto;
 import com.java_ecommerce.java_shops.exception.ProductNotFoundException;
 import com.java_ecommerce.java_shops.exception.ResourceNotFoundException;
-import com.java_ecommerce.java_shops.model.Category;
 import com.java_ecommerce.java_shops.model.Product;
 import com.java_ecommerce.java_shops.request.AddProductRequest;
 import com.java_ecommerce.java_shops.request.ProductUpdateRequest;
@@ -150,7 +149,7 @@ public class ProductController {
             }
 
             List<ProductDto> convertedProducts = productService.getConvertProductsToDto(products);
-            
+
             return ResponseEntity.ok(new ApiResponse("Found!", convertedProducts));
         } catch (Exception e) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
