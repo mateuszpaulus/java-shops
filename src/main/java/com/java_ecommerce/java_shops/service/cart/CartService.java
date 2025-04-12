@@ -3,6 +3,7 @@ package com.java_ecommerce.java_shops.service.cart;
 import com.java_ecommerce.java_shops.exception.ResourceNotFoundException;
 import com.java_ecommerce.java_shops.model.Cart;
 import com.java_ecommerce.java_shops.model.CartItem;
+import com.java_ecommerce.java_shops.model.User;
 import com.java_ecommerce.java_shops.repository.CartItemRepository;
 import com.java_ecommerce.java_shops.repository.CartRepository;
 
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -53,12 +55,21 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Long initializeNewCart() {
-        Cart newCart = new Cart();
-        Long newCartId = cartIdGenerator.incrementAndGet();
-        newCart.setId(newCartId);
-        return cartRepository.save(newCart).getId();
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId()))
+                .orElseGet(() -> {
+                    Cart cart = new Cart();
+                    cart.setUser(user);
+                    return cartRepository.save(cart);
+                });
     }
+    
+//    public Long initializeNewCart() {
+//        Cart newCart = new Cart();
+//        Long newCartId = cartIdGenerator.incrementAndGet();
+//        newCart.setId(newCartId);
+//        return cartRepository.save(newCart).getId();
+//    }
 
     @Override
     public Cart getCartByUserId(Long userId) {

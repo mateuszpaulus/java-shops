@@ -24,7 +24,7 @@ public class Order {
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStats;
+    private OrderStatus orderStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems = new HashSet<>();
@@ -34,7 +34,4 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-
-    public void setOrderStatus(OrderStatus pending) {
-    }
 }

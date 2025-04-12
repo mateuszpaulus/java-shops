@@ -83,7 +83,6 @@ public class ProductController {
         try {
             List<Product> products = productService.getProductsByBrandAndName(brandName, productName);
 
-
             if (products.isEmpty()) {
                 return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Not products found", null));
             }
