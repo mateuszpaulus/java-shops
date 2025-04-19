@@ -1,7 +1,7 @@
 package com.java_ecommerce.java_shops.controller;
 
 import com.java_ecommerce.java_shops.dto.ProductDto;
-import com.java_ecommerce.java_shops.exception.ProductNotFoundException;
+import com.java_ecommerce.java_shops.exception.AlreadyExistsException;
 import com.java_ecommerce.java_shops.exception.ResourceNotFoundException;
 import com.java_ecommerce.java_shops.model.Product;
 import com.java_ecommerce.java_shops.request.AddProductRequest;
@@ -10,6 +10,7 @@ import com.java_ecommerce.java_shops.response.ApiResponse;
 import com.java_ecommerce.java_shops.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,16 +48,18 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product) {
         try {
             Product addedProduct = productService.addProduct(product);
             return ResponseEntity.ok(new ApiResponse("Added!", addedProduct));
-        } catch (ProductNotFoundException e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("product/{productId}/update")
     public ResponseEntity<ApiResponse> updateProduct(@PathVariable Long productId, @RequestBody ProductUpdateRequest product) {
         try {

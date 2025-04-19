@@ -2,6 +2,7 @@ package com.java_ecommerce.java_shops.service.product;
 
 import com.java_ecommerce.java_shops.dto.ImageDto;
 import com.java_ecommerce.java_shops.dto.ProductDto;
+import com.java_ecommerce.java_shops.exception.AlreadyExistsException;
 import com.java_ecommerce.java_shops.exception.ProductNotFoundException;
 import com.java_ecommerce.java_shops.model.Image;
 import com.java_ecommerce.java_shops.model.Product;
@@ -29,12 +30,22 @@ public class ProductService implements IProductService {
 
     @Override
     public Product addProduct(AddProductRequest request) {
+
+        if (productExist(request.getName(), request.getBrand())) {
+            throw new AlreadyExistsException(request.getBrand() + " " + request.getName() + " already exists, you may update this product instead!");
+        }
+
         Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName())).orElseGet(() -> {
             Category newCategory = new Category(request.getCategory().getName());
             return categoryRepository.save(newCategory);
         });
         request.setCategory(category);
         return productRepository.save(createProduct(request, category));
+    }
+
+    private boolean productExist(String name, String brand) {
+        return productRepository.existsByNameAndBrand(name, brand);
+
     }
 
     private Product createProduct(AddProductRequest request, Category category) {
@@ -57,9 +68,7 @@ public class ProductService implements IProductService {
     public Product deleteProductById(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> {
-                    return new ProductNotFoundException("Product not found!");
-                });
+                .orElseThrow(() -> new ProductNotFoundException("Product not found!"));
 
         productRepository.delete(product);
 
